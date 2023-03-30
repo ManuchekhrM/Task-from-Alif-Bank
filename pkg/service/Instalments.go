@@ -7,12 +7,13 @@ import (
 	"log"
 	"math"
 	"strconv"
+	"strings"
 )
 
 var (
 	ErrPhoneRegistered      = errors.New("phone already registered")
 	ErrAmountMustBePositive = errors.New("amount must be greater")
-	ErrInvalidPeriod       = errors.New("ErrInvalidPeriod")
+	ErrInvalidPeriod        = errors.New("ErrInvalidPeriod")
 )
 
 type Service struct {
@@ -70,6 +71,19 @@ func (s *Service) GetSumOfInstalment(category string, amount float64, phone stri
 	splitInMonth = math.Ceil((splitInMonth)*100) / 100
 
 	return sum, splitInMonth, nil
+}
+
+func (s *Service) CreateMessageTextForInstalment(sum float64, splitInMonth float64, period string) (string, error) {
+	sumForMsg := fmt.Sprintf("%.2f", sum)
+	splitInMon := fmt.Sprintf("%.2f", splitInMonth)
+
+	msg := "Вы совершили покупку с рассрочкой на {period} месяцев на {sum} сомони. Ваша ежемесячная оплата составляет {per month} сомон."
+
+	message := strings.ReplaceAll(msg, "{period}", period)
+	message = strings.ReplaceAll(message, "{sum}", sumForMsg)
+	message = strings.ReplaceAll(message, "{per month}", splitInMon)
+
+	return message, nil
 }
 
 // Send info message about instalment
