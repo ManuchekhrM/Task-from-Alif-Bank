@@ -81,7 +81,7 @@ func TestGetSumOfInstalment_inTwentyFourMonth_forSmartphone(t *testing.T) {
 	}
 }
 
-func TestGetSumOfInstalment_inEigteenMonth_forLaptop(t *testing.T) {
+func TestGetSumOfInstalment_inEighteenMonth_forLaptop(t *testing.T) {
 	var service Service
 
 	period := types.EighteenMonth
@@ -112,7 +112,6 @@ func TestGetSumOfInstalment_inTwentyFourMonth_forLaptop(t *testing.T) {
 	period := types.TwentyFourMonth
 	category := types.Laptop
 	phone := "+992935598877"
-	// var accountID int64 = 1
 
 	sum, splitInMonth, err := service.GetSumOfInstalment(category, 1000.0, phone, period)
 	if err != nil {

@@ -10,15 +10,15 @@ import (
 )
 
 var (
-	ErrPhoneRegistered      = errors.New("phone alredy registerd")
+	ErrPhoneRegistered      = errors.New("phone already registered")
 	ErrAmountMustBePositive = errors.New("amount must be greater")
-	ErrInvailidPeriod       = errors.New("ErrInvailidPeriod")
+	ErrInvalidPeriod       = errors.New("ErrInvalidPeriod")
 )
 
 type Service struct {
 }
 
-// Gives us percent for instalments for additional months
+// Gives us percent for installments for additional months
 func Percents(category string, period string) float64 {
 	switch category {
 	case types.Smartphone:
@@ -49,7 +49,7 @@ func Percents(category string, period string) float64 {
 			return periodPercent
 		}
 	default:
-		log.Panicln(ErrInvailidPeriod)
+		log.Panicln(ErrInvalidPeriod)
 	}
 	return 0
 }
@@ -60,11 +60,13 @@ func (s *Service) GetSumOfInstalment(category string, amount float64, phone stri
 		return 0, 0, ErrAmountMustBePositive
 	}
 
-	percentOfcategory := Percents(category, period)
-	sum = ((100.0 + percentOfcategory) * amount) / 100.0
+	percentOfCategory := Percents(category, period)
+	sum = ((100.0 + percentOfCategory) * amount) / 100.0
 
 	per, _ := strconv.ParseFloat(period, 32)
 	splitInMonth = sum / per
+
+	// Rounded to 2 digits
 	splitInMonth = math.Ceil((splitInMonth)*100) / 100
 
 	return sum, splitInMonth, nil

@@ -23,11 +23,11 @@ func main() {
 	sumForMsg := fmt.Sprintf("%.2f", sum)
 	splitInMon := fmt.Sprintf("%.2f", splitInMonth)
 
-	msg := "Вы совершили покупку с рассрочкой на {period} месяцев на {sum} сомони. Ваша ежемесячная оплата составляет {permonth} сомон."
+	msg := "Вы совершили покупку с рассрочкой на {period} месяцев на {sum} сомони. Ваша ежемесячная оплата составляет {per month} сомон."
 
 	message := strings.ReplaceAll(msg, "{period}", period)
 	message = strings.ReplaceAll(message, "{sum}", sumForMsg)
-	message = strings.ReplaceAll(message, "{permonth}", splitInMon)
+	message = strings.ReplaceAll(message, "{per month}", splitInMon)
 
 	err = s.SendMessage(phone, message)
 	if err != nil {
