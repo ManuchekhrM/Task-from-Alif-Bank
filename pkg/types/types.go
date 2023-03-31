@@ -39,5 +39,5 @@ type Instalment struct {
 	ProductCategory ProductCategory
 	AccountPhone    string
 	Amount          Money
-	RangInstalment int
+	RangInstalment  int
 }

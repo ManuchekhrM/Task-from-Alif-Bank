@@ -21,7 +21,7 @@ func main() {
 			continue
 		}
 
-		message, err := s.CreateMessageTextForInstalment(sum, splitInMonth, period)
+		message := s.CreateMessageTextForInstalment(sum, splitInMonth, period)
 		if err != nil {
 			log.Printf("ERR: %v \n\n", err)
 			continue

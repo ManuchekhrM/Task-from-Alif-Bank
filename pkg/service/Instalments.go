@@ -12,10 +12,12 @@ import (
 
 var (
 	ErrAmountMustBePositive = errors.New("Amount must be greater")
-	ErrInvalidPeriod        = errors.New("ErrInvalidPeriod")
+	err                     = errors.New("Non found")
 )
 
 type Service struct {
+	// RegisterAccount
+	// InstalmentInfo
 }
 
 func (s *Service) AddFromConsole() (period string, category string, amount float64, phone string, err error) {
@@ -42,6 +44,8 @@ func (s *Service) Percents(category string, period string) (float64, error) {
 	switch category {
 	case types.Smartphone:
 		switch period {
+		case types.ThreeMonth, types.SixMonth, types.NineMonth:
+			return 0, nil
 		case types.TwelveMonth:
 			return 3.0, nil
 		case types.EighteenMonth:
@@ -49,26 +53,30 @@ func (s *Service) Percents(category string, period string) (float64, error) {
 		case types.TwentyFourMonth:
 			return 9.0, nil
 		default:
-			return 0, nil
+			return 0, err
 		}
 	case types.Laptop:
 		switch period {
+		case types.ThreeMonth, types.SixMonth, types.NineMonth, types.TwelveMonth:
+			return 0, nil
 		case types.EighteenMonth:
 			return 4.0, nil
 		case types.TwentyFourMonth:
 			return 8.0, nil
 		default:
-			return 0, nil
+			return 0, err
 		}
 	case types.TV:
 		switch period {
+		case types.ThreeMonth, types.SixMonth, types.NineMonth, types.TwelveMonth, types.EighteenMonth:
+			return 0, nil
 		case types.TwentyFourMonth:
 			return 5.0, nil
 		default:
-			return 0, nil
+			return 0, err
 		}
 	default:
-		return 0, ErrInvalidPeriod
+		return 0, err
 	}
 }
 
@@ -78,11 +86,17 @@ func (s *Service) GetSumOfInstalment(category string, amount float64, phone stri
 		return 0, 0, ErrAmountMustBePositive
 	}
 
-	percentOfCategory, _ := s.Percents(category, period)
+	percentOfCategory, err := s.Percents(category, period)
+	if err != nil {
+		return 0, 0, err
+	}
 
 	sum = ((100.0 + percentOfCategory) * amount) / 100.0
 
-	per, _ := strconv.ParseFloat(period, 32)
+	per, err := strconv.ParseFloat(period, 32)
+	if err != nil {
+		return 0, 0, err
+	}
 	splitInMonth = sum / per
 
 	// Rounded to 2 digits
@@ -91,7 +105,7 @@ func (s *Service) GetSumOfInstalment(category string, amount float64, phone stri
 	return sum, splitInMonth, nil
 }
 
-func (s *Service) CreateMessageTextForInstalment(sum float64, splitInMonth float64, period string) (string, error) {
+func (s *Service) CreateMessageTextForInstalment(sum float64, splitInMonth float64, period string) string {
 	sumForMsg := fmt.Sprintf("%.2f", sum)
 	splitInMon := fmt.Sprintf("%.2f", splitInMonth)
 
@@ -101,7 +115,7 @@ func (s *Service) CreateMessageTextForInstalment(sum float64, splitInMonth float
 	message = strings.ReplaceAll(message, "{sum}", sumForMsg)
 	message = strings.ReplaceAll(message, "{per month}", splitInMon)
 
-	return message, nil
+	return message
 }
 
 // Send info message about instalment
