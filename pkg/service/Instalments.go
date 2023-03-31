@@ -5,19 +5,37 @@ import (
 	"fmt"
 	"instalmentPayments/pkg/types"
 	"math"
+	"os"
 	"strconv"
 	"strings"
 )
 
 var (
-	ErrPhoneRegistered      = errors.New("phone already registered")
-	ErrAmountMustBePositive = errors.New("amount must be greater")
+	ErrAmountMustBePositive = errors.New("Amount must be greater")
 	ErrInvalidPeriod        = errors.New("ErrInvalidPeriod")
 )
 
 type Service struct {
 }
 
+func (s *Service) AddFromConsole() (period string, category string, amount float64, phone string, err error) {
+	fmt.Print("Добро пожаловать в калькулятор подсчета рассрочки!\n")
+
+	fmt.Printf("\nВведите категорию из списка: %s, %s и %s:\n", types.Smartphone, types.Laptop, types.TV)
+	fmt.Fscan(os.Stdin, &category)
+
+	fmt.Printf("Введитe периюд рассрочки из списка: %s, %s, %s, %s, %s и %s месяца:\n",
+		types.ThreeMonth, types.SixMonth, types.NineMonth, types.TwelveMonth, types.EighteenMonth, types.TwentyFourMonth)
+	fmt.Fscan(os.Stdin, &period)
+
+	fmt.Print("Введите сумму выплаты. К приверу 100.0:\n")
+	fmt.Fscan(os.Stdin, &amount)
+
+	fmt.Print("Введите номер телефона для отправки информации о рассрочке:\n")
+	fmt.Fscan(os.Stdin, &phone)
+
+	return
+}
 
 // Gives us percent for installments for additional months
 func (s *Service) Percents(category string, period string) (float64, error) {
@@ -49,7 +67,6 @@ func (s *Service) Percents(category string, period string) (float64, error) {
 		default:
 			return 0, nil
 		}
-
 	default:
 		return 0, ErrInvalidPeriod
 	}
