@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"instalmentPayments/pkg/types"
-	"log"
 	"math"
 	"strconv"
 	"strings"
@@ -19,40 +18,41 @@ var (
 type Service struct {
 }
 
+
 // Gives us percent for installments for additional months
-func Percents(category string, period string) float64 {
+func (s *Service) Percents(category string, period string) (float64, error) {
 	switch category {
 	case types.Smartphone:
-		if period == types.TwelveMonth {
-			periodPercent := 3.0
-			return periodPercent
-		}
-		if period == types.EighteenMonth {
-			periodPercent := 6.0
-			return periodPercent
-		}
-		if period == types.TwentyFourMonth {
-			periodPercent := 9.0
-			return periodPercent
+		switch period {
+		case types.TwelveMonth:
+			return 3.0, nil
+		case types.EighteenMonth:
+			return 6.0, nil
+		case types.TwentyFourMonth:
+			return 9.0, nil
+		default:
+			return 0, nil
 		}
 	case types.Laptop:
-		if period == types.EighteenMonth {
-			periodPercent := 4.0
-			return periodPercent
-		}
-		if period == types.TwentyFourMonth {
-			periodPercent := 8.0
-			return periodPercent
+		switch period {
+		case types.EighteenMonth:
+			return 4.0, nil
+		case types.TwentyFourMonth:
+			return 8.0, nil
+		default:
+			return 0, nil
 		}
 	case types.TV:
-		if period == types.TwentyFourMonth {
-			periodPercent := 5.0
-			return periodPercent
+		switch period {
+		case types.TwentyFourMonth:
+			return 5.0, nil
+		default:
+			return 0, nil
 		}
+
 	default:
-		log.Panicln(ErrInvalidPeriod)
+		return 0, ErrInvalidPeriod
 	}
-	return 0
 }
 
 // We calculate the instalment amount with percent
@@ -61,7 +61,8 @@ func (s *Service) GetSumOfInstalment(category string, amount float64, phone stri
 		return 0, 0, ErrAmountMustBePositive
 	}
 
-	percentOfCategory := Percents(category, period)
+	percentOfCategory, _ := s.Percents(category, period)
+
 	sum = ((100.0 + percentOfCategory) * amount) / 100.0
 
 	per, _ := strconv.ParseFloat(period, 32)
@@ -77,7 +78,7 @@ func (s *Service) CreateMessageTextForInstalment(sum float64, splitInMonth float
 	sumForMsg := fmt.Sprintf("%.2f", sum)
 	splitInMon := fmt.Sprintf("%.2f", splitInMonth)
 
-	msg := "Вы совершили покупку с рассрочкой на {period} месяцев на {sum} сомони. Ваша ежемесячная оплата составляет {per month} сомон."
+	msg := "Вы совершили покупку с рассрочкой на {period} месяцев на {sum} сомони. Ваша ежемесячная оплата составляет {per month} сомон.\n \n"
 
 	message := strings.ReplaceAll(msg, "{period}", period)
 	message = strings.ReplaceAll(message, "{sum}", sumForMsg)
